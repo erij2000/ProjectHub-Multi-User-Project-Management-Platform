@@ -1,0 +1,102 @@
+<div class="page-header">
+  <h2><mat-icon>people</mat-icon> Employés</h2>
+</div>
+
+<div class="content-layout">
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>{{ editing() ? 'Modifier employé' : 'Nouvel employé' }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <mat-form-field class="full-width" appearance="outline">
+          <mat-label>Nom</mat-label>
+          <input matInput formControlName="nom">
+          <mat-error>Requis</mat-error>
+        </mat-form-field>
+        <mat-form-field class="full-width" appearance="outline">
+          <mat-label>Prénom</mat-label>
+          <input matInput formControlName="prenom">
+          <mat-error>Requis</mat-error>
+        </mat-form-field>
+        <mat-form-field class="full-width" appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" type="email">
+          <mat-error>Email invalide</mat-error>
+        </mat-form-field>
+        <mat-form-field class="full-width" appearance="outline">
+          <mat-label>Mot de passe</mat-label>
+          <input matInput formControlName="password" type="password" [placeholder]="editing() ? 'Laisser vide = inchangé' : ''">
+        </mat-form-field>
+        <mat-form-field class="full-width" appearance="outline">
+          <mat-label>Rôle</mat-label>
+          <mat-select formControlName="role">
+            <mat-option value="ADMIN">Admin</mat-option>
+            <mat-option value="EMPLOYE">Employé</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field class="full-width" appearance="outline">
+          <mat-label>Catégorie</mat-label>
+          <mat-select formControlName="categorie">
+            <mat-option *ngFor="let c of categories()" [value]="c.id">{{ c.nom }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div class="form-actions">
+          <button mat-stroked-button type="button" *ngIf="editing()" (click)="cancel()">Annuler</button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+            <mat-icon>{{ editing() ? 'save' : 'person_add' }}</mat-icon>
+            {{ editing() ? 'Modifier' : 'Ajouter' }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="table-card">
+    <mat-card-header>
+      <mat-card-title>Liste des employés ({{ employes().length }})</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <table mat-table [dataSource]="employes()">
+        <ng-container matColumnDef="nom">
+          <th mat-header-cell *matHeaderCellDef>Nom & Prénom</th>
+          <td mat-cell *matCellDef="let e">
+            <div class="employe-name">
+              <div class="avatar">{{ e.nom[0] }}{{ e.prenom[0] }}</div>
+              <div>
+                <strong>{{ e.nom }} {{ e.prenom }}</strong>
+                <div class="sub">{{ e.email }}</div>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+          <td mat-cell *matCellDef="let e">{{ e.email }}</td>
+        </ng-container>
+        <ng-container matColumnDef="categorie">
+          <th mat-header-cell *matHeaderCellDef>Catégorie</th>
+          <td mat-cell *matCellDef="let e">
+            <mat-chip *ngIf="e.categorie">{{ e.categorie.nom }}</mat-chip>
+            <span *ngIf="!e.categorie" style="color:#aaa;">—</span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="role">
+          <th mat-header-cell *matHeaderCellDef>Rôle</th>
+          <td mat-cell *matCellDef="let e">
+            <mat-chip [class]="e.role === 'ADMIN' ? 'chip-admin' : 'chip-employe'">{{ e.role }}</mat-chip>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let e">
+            <button mat-icon-button color="primary" (click)="edit(e)" matTooltip="Modifier"><mat-icon>edit</mat-icon></button>
+            <button mat-icon-button color="warn" (click)="delete(e.id!)" matTooltip="Supprimer"><mat-icon>delete</mat-icon></button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+</div>

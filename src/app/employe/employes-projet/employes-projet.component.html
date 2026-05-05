@@ -1,0 +1,48 @@
+<div class="page-header">
+  <h2><mat-icon>people</mat-icon> Employés par Projet</h2>
+  <p>Sélectionnez un projet pour voir l'équipe</p>
+</div>
+
+<mat-form-field appearance="outline" class="full-width">
+  <mat-label>Sélectionner un projet</mat-label>
+  <mat-select (selectionChange)="selectProjet($event.value)">
+    <mat-option *ngFor="let p of projets()" [value]="p.id">
+      <mat-icon style="vertical-align:middle; margin-right:8px; color:#3f51b5;">folder</mat-icon>
+      {{ p.nom }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
+<div *ngIf="!selectedProjet()" class="empty-state">
+  <mat-icon>group</mat-icon>
+  <p>Choisissez un projet pour voir les membres</p>
+</div>
+
+<mat-card *ngIf="selectedProjet()" class="team-card">
+  <mat-card-header>
+    <mat-icon mat-card-avatar style="color:#3f51b5; font-size:32px; width:32px; height:32px;">group</mat-icon>
+    <mat-card-title>Équipe — {{ affectations().length }} membre(s)</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="team-grid">
+      <div class="member-card" *ngFor="let a of affectations()">
+        <div class="member-cat">
+          <mat-icon style="font-size:12px;width:12px;height:12px;">label</mat-icon>
+          Non défini
+        </div>
+        <div class="member-info">
+          <div class="member-name">{{ a.employe.nom }} {{ a.employe.prenom }}</div>
+          <div class="member-cat">
+            <mat-icon style="font-size:12px;width:12px;height:12px;">label</mat-icon>
+            Membre
+          </div>
+          <div class="member-dates">
+            <span>{{ a.dateDebut }}</span>
+            <mat-icon style="font-size:12px;">arrow_forward</mat-icon>
+            <span>{{ a.dateFin }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

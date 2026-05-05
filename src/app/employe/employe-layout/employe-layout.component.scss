@@ -1,0 +1,23 @@
+:host { display: block; height: 100vh; }
+
+.avatar-large {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  color: white; font-size: 28px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 12px;
+  border: 3px solid rgba(255,255,255,0.4);
+}
+
+.avatar-sm {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: #3f51b5; color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 600; font-size: 13px;
+}
+
+.user-chip {
+  display: flex; align-items: center; gap: 8px;
+  background: #f0f4ff; padding: 4px 12px 4px 4px;
+  border-radius: 20px; font-size: 13px; color: #3f51b5;
+}

@@ -1,0 +1,120 @@
+<div class="page-header">
+  <div>
+    <h2><mat-icon>folder_special</mat-icon> Mes Projets</h2>
+    <p>{{ affectations().length }} projet(s) affecté(s)</p>
+  </div>
+</div>
+
+<!-- BANNER GLOBAL -->
+<mat-card class="global-banner" *ngIf="affectations().length > 0">
+  <mat-card-content>
+    <div class="banner-grid">
+      <div class="banner-stat">
+        <mat-icon>folder</mat-icon>
+        <div>
+          <div class="bstat-num">{{ affectations().length }}</div>
+          <div class="bstat-label">Projets</div>
+        </div>
+      </div>
+      <div class="banner-stat">
+        <mat-icon>task_alt</mat-icon>
+        <div>
+          <div class="bstat-num">{{ getTotalDone() }}/{{ getTotalTaches() }}</div>
+          <div class="bstat-label">Tâches complétées</div>
+        </div>
+      </div>
+      <div class="banner-stat">
+        <mat-icon>trending_up</mat-icon>
+        <div>
+          <div class="bstat-num">{{ getProgressionGlobale() }}%</div>
+          <div class="bstat-label">Progression globale</div>
+        </div>
+      </div>
+      <div class="banner-progress">
+        <span style="font-size:12px; color:rgba(255,255,255,0.8); margin-bottom:6px; display:block;">Avancement global des tâches</span>
+        <mat-progress-bar mode="determinate" [value]="getProgressionGlobale()" color="accent"></mat-progress-bar>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<!-- EMPTY -->
+<mat-card *ngIf="affectations().length === 0" class="empty-card">
+  <mat-card-content>
+    <mat-icon>inbox</mat-icon>
+    <p>Aucun projet affecté pour le moment</p>
+  </mat-card-content>
+</mat-card>
+
+<!-- PROJETS GRID -->
+<div class="projets-grid" *ngIf="affectations().length > 0">
+  <mat-card class="projet-card" *ngFor="let a of affectations()">
+
+    <div class="projet-header">
+      <div class="projet-icon">
+        <mat-icon>folder</mat-icon>
+      </div>
+      <div class="projet-info">
+        <h3>{{ a.projet.nom }}</h3>
+        <span class="statut-badge" [style.background]="getStatut(a.dateFin).color">
+          <mat-icon style="font-size:13px;width:13px;height:13px;">{{ getStatut(a.dateFin).icon }}</mat-icon>
+          {{ getStatut(a.dateFin).label }}
+        </span>
+      </div>
+    </div>
+
+    <div class="dates-row">
+      <span><mat-icon>event</mat-icon> {{ a.dateDebut }}</span>
+      <span><mat-icon>event_busy</mat-icon> {{ a.dateFin }}</span>
+    </div>
+
+    <div class="progression-section">
+      <div class="prog-label">
+        <span>Progression temporelle</span>
+        <strong>{{ getProgression(a.dateDebut, a.dateFin) }}%</strong>
+      </div>
+      <mat-progress-bar mode="determinate"
+                        [value]="getProgression(a.dateDebut, a.dateFin)"
+                        [color]="getProgression(a.dateDebut, a.dateFin) >= 100 ? 'warn' : 'primary'">
+      </mat-progress-bar>
+    </div>
+
+    <mat-divider style="margin: 14px 0;"></mat-divider>
+
+    <!-- Tâches -->
+    <div class="taches-section">
+      <div class="taches-header">
+        <mat-icon>task_alt</mat-icon>
+        <span>Tâches</span>
+        <span class="tache-count">{{ getTachesDone(a.projet.id!) }}/{{ getTaches(a.projet.id!).length }}</span>
+      </div>
+
+      <mat-progress-bar *ngIf="getTaches(a.projet.id!).length > 0"
+                        mode="determinate"
+                        [value]="getTaches(a.projet.id!).length > 0 ? (getTachesDone(a.projet.id!) / getTaches(a.projet.id!).length) * 100 : 0"
+                        color="primary" style="margin-bottom: 10px; border-radius: 4px;">
+      </mat-progress-bar>
+
+      <div class="tache-item" *ngFor="let t of getTaches(a.projet.id!)">
+        <mat-checkbox [checked]="t.done" (change)="toggleTache(a.projet.id!, t.id)" color="primary">
+          <span [style.text-decoration]="t.done ? 'line-through' : 'none'"
+                [style.color]="t.done ? '#bbb' : '#333'">{{ t.label }}</span>
+        </mat-checkbox>
+        <button mat-icon-button (click)="deleteTache(a.projet.id!, t.id)" style="width:26px;height:26px;">
+          <mat-icon style="font-size:15px;color:#e53935;">close</mat-icon>
+        </button>
+      </div>
+
+      <div class="add-tache">
+        <mat-icon style="color:#bbb; font-size:18px;">add</mat-icon>
+        <input [(ngModel)]="newTache[a.projet.id!]"
+               placeholder="Ajouter une tâche..."
+               (keyup.enter)="addTache(a.projet.id!)">
+        <button mat-icon-button color="primary" (click)="addTache(a.projet.id!)">
+          <mat-icon>send</mat-icon>
+        </button>
+      </div>
+    </div>
+
+  </mat-card>
+</div>

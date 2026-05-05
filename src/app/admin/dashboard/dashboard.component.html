@@ -1,0 +1,145 @@
+<div class="dashboard-header">
+  <div>
+    <h2>Tableau de bord</h2>
+    <p>Vue d'ensemble de la plateforme</p>
+  </div>
+  <div class="date-badge">
+    <mat-icon>calendar_today</mat-icon>
+    {{ today | date:'d MMMM yyyy' }}
+  </div>
+</div>
+
+<!-- STAT CARDS -->
+<div class="stats-grid">
+  <mat-card class="stat-card blue" routerLink="/admin/employes">
+    <mat-card-content>
+      <div class="stat-top">
+        <div class="stat-icon"><mat-icon>people</mat-icon></div>
+        <div class="stat-number">{{ employes() }}</div>
+      </div>
+      <div class="stat-label">Employés</div>
+      <mat-progress-bar mode="determinate" [value]="employes() * 10" color="accent" style="margin-top:12px; opacity:0.4;"></mat-progress-bar>
+      <div class="stat-footer">Voir tous →</div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="stat-card green" routerLink="/admin/projets">
+    <mat-card-content>
+      <div class="stat-top">
+        <div class="stat-icon"><mat-icon>folder</mat-icon></div>
+        <div class="stat-number">{{ projets() }}</div>
+      </div>
+      <div class="stat-label">Projets actifs</div>
+      <mat-progress-bar mode="determinate" [value]="projets() * 12" color="accent" style="margin-top:12px; opacity:0.4;"></mat-progress-bar>
+      <div class="stat-footer">Voir tous →</div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="stat-card orange" routerLink="/admin/categories">
+    <mat-card-content>
+      <div class="stat-top">
+        <div class="stat-icon"><mat-icon>category</mat-icon></div>
+        <div class="stat-number">{{ categories() }}</div>
+      </div>
+      <div class="stat-label">Catégories</div>
+      <mat-progress-bar mode="determinate" [value]="categories() * 20" color="accent" style="margin-top:12px; opacity:0.4;"></mat-progress-bar>
+      <div class="stat-footer">Voir tous →</div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="stat-card purple" routerLink="/admin/affectations">
+    <mat-card-content>
+      <div class="stat-top">
+        <div class="stat-icon"><mat-icon>assignment</mat-icon></div>
+        <div class="stat-number">{{ affectations() }}</div>
+      </div>
+      <div class="stat-label">Affectations</div>
+      <mat-progress-bar mode="determinate" [value]="affectations() * 8" color="accent" style="margin-top:12px; opacity:0.4;"></mat-progress-bar>
+      <div class="stat-footer">Voir tous →</div>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<!-- CHARTS ROW -->
+<div class="charts-grid">
+  <mat-card class="chart-card">
+    <mat-card-header>
+      <mat-icon mat-card-avatar style="color:#3f51b5">bar_chart</mat-icon>
+      <mat-card-title>Employés par catégorie</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <canvas baseChart [data]="barChartData()" [options]="barChartOptions" type="bar"></canvas>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="chart-card">
+    <mat-card-header>
+      <mat-icon mat-card-avatar style="color:#7b1fa2">pie_chart</mat-icon>
+      <mat-card-title>Répartition des rôles</mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="pie-container">
+      <canvas baseChart [data]="pieChartData()" [options]="pieChartOptions" type="pie"></canvas>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<!-- LINE CHART -->
+<mat-card class="line-card">
+  <mat-card-header>
+    <mat-icon mat-card-avatar style="color:#43a047">trending_up</mat-icon>
+    <mat-card-title>Affectations par mois</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <canvas baseChart [data]="lineChartData()" [options]="lineChartOptions" type="line"></canvas>
+  </mat-card-content>
+</mat-card>
+
+<!-- BOTTOM ROW -->
+<div class="bottom-grid">
+
+  <!-- Dernières affectations -->
+  <mat-card class="recent-card">
+    <mat-card-header>
+      <mat-icon mat-card-avatar style="color:#f57c00">history</mat-icon>
+      <mat-card-title>Dernières affectations</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="affectation-row" *ngFor="let a of recentAffectations()">
+        <div class="aff-avatar">{{ a.employe?.nom?.[0] ?? '?' }}</div>
+        <div class="aff-info">
+          <span class="aff-name">{{ a.employe.nom }} {{ a.employe.prenom }}</span>
+          <span class="aff-projet">{{ a.projet.nom }}</span>
+        </div>
+        <div class="aff-right">
+          <span class="aff-date">{{ a.dateFin }}</span>
+          <span class="statut-pill" [style.background]="getStatut(a.dateFin).color">
+            {{ getStatut(a.dateFin).label }}
+          </span>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Actions rapides -->
+  <mat-card class="actions-card">
+    <mat-card-header>
+      <mat-icon mat-card-avatar style="color:#3f51b5">flash_on</mat-icon>
+      <mat-card-title>Actions rapides</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <button mat-flat-button routerLink="/admin/employes" class="action-btn blue-btn">
+        <mat-icon>person_add</mat-icon> Ajouter employé
+      </button>
+      <button mat-flat-button routerLink="/admin/projets" class="action-btn green-btn">
+        <mat-icon>add_box</mat-icon> Nouveau projet
+      </button>
+      <button mat-flat-button routerLink="/admin/affectations" class="action-btn orange-btn">
+        <mat-icon>assignment_ind</mat-icon> Affecter employé
+      </button>
+      <button mat-flat-button routerLink="/admin/categories" class="action-btn purple-btn">
+        <mat-icon>label</mat-icon> Ajouter catégorie
+      </button>
+    </mat-card-content>
+  </mat-card>
+
+</div>
